@@ -31,6 +31,9 @@
 
   /* gap used by the 4-up "Why join" row, reused in a calc() below */
   --quad-gap: clamp(20px, 3vw, 32px);
+
+  /* how far anchor links stop below the top (header is sticky on desktop only) */
+  --scroll-offset: calc(var(--header-h) + 16px);
 }
 
 /* ---------- Reset / base ---------- */
@@ -40,7 +43,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--header-h) + 16px);
+  scroll-padding-top: var(--scroll-offset);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -213,12 +216,6 @@ h1, h2, h3 {
   align-items: center;
   gap: 20px;
 }
-.header-org {
-  white-space: nowrap;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--muted);
-}
 
 /* ---------- Hero ---------- */
 .hero {
@@ -333,7 +330,7 @@ h1, h2, h3 {
 }
 
 .icon-chip {
-  display: inline-flex;
+  display: flex;                 /* block-level, so no stray line-height gap under it */
   align-items: center;
   justify-content: center;
   width: 48px;
@@ -612,8 +609,6 @@ h1, h2, h3 {
 
 /* Tablet */
 @media (max-width: 960px) {
-  .header-org { display: none; }
-
   /* Hero: stack text above illustration */
   .hero-grid { flex-direction: column; align-items: stretch; }
   .hero-copy,
@@ -686,6 +681,363 @@ h1, h2, h3 {
 
 @media (max-width: 380px) {
   .brand img { height: 26px; }
+}
+
+
+/* ==========================================================
+   TASK 2 ADDITIONS
+   Header navigation, text links, and the Programs page.
+   (All layout is flexbox.)
+   ========================================================== */
+
+/* ---------- Header navigation ---------- */
+.site-nav { margin-left: auto; }   /* pushes nav (and the button after it) to the right */
+.site-nav ul {
+  display: flex;
+  gap: 6px;
+}
+.site-nav a {
+  display: block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+.site-nav a:hover { background: var(--soft); color: var(--navy); }
+.site-nav a[aria-current="page"] {
+  background: rgba(57, 184, 10, 0.16);
+  color: var(--navy);
+}
+
+/* ---------- Text link with arrow ---------- */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 2px;
+  border-bottom: 2px solid var(--green);
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: none;
+  transition: gap 0.2s;
+}
+.text-link:hover { gap: 12px; }
+.text-link .icon { width: 1.1em; height: 1.1em; }
+.program-card .text-link { margin-top: 22px; }
+
+/* Outline button for dark backgrounds */
+.btn-outline-light {
+  background: transparent;
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.btn-outline-light:hover {
+  background: var(--white);
+  color: var(--navy);
+}
+
+/* ---------- Programs page: hero ---------- */
+.page-hero { padding: clamp(36px, 6vw, 72px) 0 clamp(48px, 7vw, 88px); }
+
+.breadcrumb { margin-bottom: 22px; }
+.breadcrumb ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.breadcrumb li + li::before {
+  content: "/";
+  margin-right: 8px;
+  color: #b4b7c7;
+}
+.breadcrumb a { text-decoration: none; }
+.breadcrumb a:hover { color: var(--navy); text-decoration: underline; }
+.breadcrumb [aria-current="page"] { color: var(--navy); }
+
+/* Program chooser on the right of the hero */
+.chooser {
+  flex: 0.95 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.chooser-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.path-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(13, 0, 77, 0.08);
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.path-card:hover { border-color: var(--green); }
+.path-text { flex: 1 1 0; min-width: 0; }
+.path-text h2 { font-size: 1.3rem; margin-bottom: 2px; }
+.path-text p { font-size: 0.97rem; color: var(--muted); }
+.path-arrow {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--navy);
+  transition: background-color 0.2s;
+}
+.path-card:hover .path-arrow { background: var(--green); }
+
+/* ---------- Programs page: one program section ---------- */
+.program-head {
+  display: flex;
+  align-items: center;
+  gap: clamp(32px, 6vw, 72px);
+}
+.program-head-reverse { flex-direction: row-reverse; }   /* illustration on the left */
+.program-head-text { flex: 1.1 1 0; min-width: 0; }
+.program-art {
+  flex: 0.9 1 0;
+  min-width: 0;
+  filter: drop-shadow(0 24px 40px rgba(13, 0, 77, 0.22));
+}
+.program-art svg { width: 100%; height: auto; }
+
+.program-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.program-head h2 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); letter-spacing: -0.03em; }
+.program-intro {
+  margin-top: 16px;
+  max-width: 54ch;
+  font-size: 1.15rem;
+  color: var(--muted);
+}
+
+/* Small "at a glance" boxes */
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+.fact {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  border-radius: 14px;
+}
+.fact-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.fact-value { font-weight: 700; color: var(--navy); }
+
+.sub-head {
+  margin: clamp(48px, 7vw, 72px) 0 24px;
+  font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+}
+
+/* Topic cards: 3 per row, wrapping to 2 then 1 */
+.topics {
+  --topic-gap: clamp(16px, 2.4vw, 24px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--topic-gap);
+}
+.topic {
+  flex: 0 0 calc((100% - 2 * var(--topic-gap)) / 3);
+  min-width: 0;
+  padding: 26px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.topic .icon-chip { margin-bottom: 16px; }
+.topic h4 {
+  margin-bottom: 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--navy);
+}
+.topic p { font-size: 0.97rem; color: var(--muted); }
+
+.topic-note {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+.topic-note h4 { color: var(--white); }
+.topic-note p { color: rgba(255, 255, 255, 0.85); }
+
+/* Skill pills */
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(57, 184, 10, 0.14);
+  font-size: 0.97rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.skill .icon { color: #1f6b05; }
+
+/* Next-step strip at the end of each program */
+.program-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  margin-top: clamp(40px, 6vw, 64px);
+  padding: 24px 28px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.section:not(.section-soft) .program-next { background: var(--soft); }
+.program-next p { flex: 1 1 320px; }
+.program-next-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+/* ---------- Programs page: which program is right? ---------- */
+.fit-grid {
+  display: flex;
+  gap: clamp(16px, 3vw, 28px);
+}
+.fit-card {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(24px, 4vw, 36px);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.fit-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.fit-title h3 { font-size: 1.3rem; }
+.fit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.fit-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.fit-list .icon { margin-top: 0.28em; color: var(--green-dark); }
+.fit-card .text-link { margin-top: auto; }   /* keeps both links on the same line */
+
+/* ---------- Programs page: closing banner ---------- */
+.banner-actions {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.banner-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+/* ---------- Responsive (Task 2) ---------- */
+
+/* Header: nav drops under the logo row, and the header stops sticking */
+@media (max-width: 860px) {
+  :root { --scroll-offset: 16px; }
+
+  .site-header { position: relative; }
+  .header-inner {
+    flex-wrap: wrap;
+    min-height: 0;
+    padding-top: 12px;
+    row-gap: 8px;
+  }
+  .site-nav {
+    order: 3;
+    flex: 1 0 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+  .site-nav ul { gap: 4px; }
+  .site-nav a { padding: 8px 12px; white-space: nowrap; }
+}
+
+@media (max-width: 960px) {
+  .chooser { flex: none; }
+
+  .program-head,
+  .program-head-reverse { flex-direction: column; align-items: stretch; }
+  .program-head-text,
+  .program-art { flex: none; }
+  .program-art { width: 100%; max-width: 600px; }
+
+  .topic { flex-basis: calc((100% - var(--topic-gap)) / 2); }
+
+  .banner-actions { flex-direction: row; flex-wrap: wrap; }
+}
+
+@media (max-width: 640px) {
+  /* nav: four links share the row evenly so none are cut off */
+  .site-nav ul { gap: 0; justify-content: space-between; }
+  .site-nav a { padding: 8px 10px; font-size: 0.9rem; }
+
+  .path-card { padding: 18px; gap: 14px; }
+  .path-text h2 { font-size: 1.15rem; }
+
+  .topic { flex-basis: 100%; }
+
+  .fit-grid { flex-direction: column; }
+  .fit-card { flex: none; }
+
+  .program-next { padding: 20px; }
+  .program-next-actions { flex-direction: column; align-items: stretch; }
+  .program-next-actions .text-link { align-self: flex-start; }
+
+  .banner-actions { flex-direction: column; align-self: stretch; }
+  .banner-actions .btn { width: 100%; }
 }
 
 /* ---------- Reduced motion ---------- */
